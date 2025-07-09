@@ -1,0 +1,29 @@
+$text-width: 66;
+
+* {
+	# border: $secondary;
+	# outline: $secondary;
+	# background: ivory 10%;
+}
+
+Screen {
+	align: center top;
+}
+
+VerticalScroll {
+	align: center top;
+	Static {
+		margin: 1 2;
+		max-width: $text-width;
+	}
+}
+
+Button {
+	padding: 1 0;
+	text-style: none;
+	background: transparent;
+	border: blank;
+	&:focus, &:hover {
+		border: heavy $text-primary;
+	}
+}

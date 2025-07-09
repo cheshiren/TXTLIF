@@ -1,38 +1,21 @@
-import textual
 from textual.app import App, ComposeResult
-from textual.content import Content
-from textual.screen import Screen
-from textual.widgets import Header, Markdown, MarkdownViewer, Static
+
+from src.classes import TextScreen
+from src.texts import FISH_TEXT, LONG_FISH_TEXT, Intro
 
 
-class TextScreen(Screen):
-	def __init__(self, name = None, id = None, classes = None, text:str=""):
-		super().__init__(name, id, classes)
-		self.text = text
-	def compose(self) -> ComposeResult:
-		yield Header()
-		yield Markdown(self.text)
-	def on_markdown_link_clicked(self, event: Markdown.LinkClicked) -> None:
-		md = event.markdown
-		new_text = md._markdown.replace("Title", "WTF") + "klsdjf;alsdkfja;lkdfj;laksdfj;alsdkfj;alsdkfj"
-		md.update(new_text)
 
 class MainApp(App):
-	
-	# SCREENS = {"start_screen": TextScreen}
 
-	text = """\
-# Title
-dfghdkjlfg
+	CSS_PATH = "styles.tcss"
+	TITLE = "Заголовок"
 
-## Title
-fgdfhgfgh
-[testlink](#Title)
-"""
+	def __init__(self, driver_class = None, css_path = None, watch_css = False, ansi_color = False):
+		super().__init__(driver_class, css_path, watch_css, ansi_color)
+		self.install_screen(TextScreen(text=Intro()), "text_screen")
 
 	def on_mount(self) -> ComposeResult:
-		self.install_screen(TextScreen(text=self.text), "start_screen")
-		self.push_screen("start_screen")
+		self.push_screen("text_screen")
 
 if __name__ == "__main__":
 	app = MainApp()
