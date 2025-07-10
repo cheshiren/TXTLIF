@@ -12,9 +12,13 @@ Screen {
 
 VerticalScroll {
 	align: center top;
-	Static {
-		margin: 1 2;
+	# content-align: center top;
+	Intro {
+		margin: 0 2;
 		max-width: $text-width;
+		Static {
+			margin: 1 0;
+		}
 	}
 }
 
