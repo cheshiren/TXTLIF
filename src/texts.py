@@ -2,7 +2,9 @@ from dataclasses import dataclass
 
 from textual.containers import Center
 from textual.widget import Widget
-from textual.widgets import Button, Static
+from textual.widgets import Button, Link, Markdown, Static
+
+from src.classes import StoryBit, StoryButton
 
 
 class Intro(Widget):
@@ -20,10 +22,70 @@ class Intro(Widget):
 	"""ИМПЕРСКИЕ ЧЕРНИЛЬНЫЕ ПАЛОЧКИ"""
 	]
 	counter = 0
+	txt = """::intro1
+.clear
+text1
+[@click=focused.click('.continue')][reverse]link[/][/]
+!button(intro2)
+::intro2
+Имеется спорная точка зрения, гласящая примерно следующее: базовые сценарии поведения пользователей преданы социально-демократической анафеме.
+[@click=focused.click('.continue')]another link[/]
+!another button(intro3)
+::intro3
+text3
+[@click=focused.click('outro')]last link[/]
+!last button(outro)
+!BACK(intro1)
+::outro
+just another chunk of text
+"""
+
+	def __init__(self, *children, name = None, id = None, classes = None, disabled = False, markup = True):
+		super().__init__(*children, name=name, id=id, classes=classes, disabled=disabled, markup=markup)
+		self.story: dict[str, StoryBit] = self.parse_text(self.txt)
+		self.startpoint = "intro1"
+
+	def parse_text(self, txt:str) -> dict[str, StoryBit]:
+		lines: list[str] = txt.splitlines()
+		storybits: dict[str, StoryBit] = {}
+		curlabel: str
+		for l in lines:
+			if l.startswith("::"):
+				curlabel = l.removeprefix("::")
+				storybits[curlabel] = StoryBit(label=curlabel, text="", commands=[], buttons=[])
+			elif l.startswith("."):
+				command = l.removeprefix(".")
+				storybits[curlabel].commands.append(command)
+			elif l.startswith("!"):
+				_buttonlabel = l.removeprefix("!").split("(")[0]
+				_buttontarget = l.removeprefix("!").split("(")[1].removesuffix(")")
+				button = StoryButton(_buttonlabel, _buttontarget)
+				storybits[curlabel].buttons.append(button)
+			else:
+				storybits[curlabel].text += l + "\n"
+		return storybits
 
 	def compose(self):
-		yield Static(self.text[0])
-		yield Center(Button("⛥", id="continue"))
+		# yield Markdown(self.txt, open_links=False)
+		# yield Static(self.txt)
+		# yield Static(self.text[0])
+		# yield Center(Button("⛥", id="continue"))
+		bit = self.story[self.startpoint]
+		yield Static(bit.text)
+		for b in bit.buttons:
+			yield Button(b.label, id=b.target)
+	
+	def on_mount(self) -> None:
+		self.can_focus = True
+		for v in self.story.values():
+			print(v)
+	
+	# def on_markdown_link_clicked(self, event: Markdown.LinkClicked):
+	# 	print(event.href)
+	# 	event.stop()
+	
+	def action_click(self, params):
+		print (params)
 	
 	def on_button_pressed(self, event: Button.Pressed):
 		_id = event.button.id
@@ -48,6 +110,15 @@ class Intro(Widget):
 				_start.styles.dock = "bottom"
 		elif _id == "start":
 			pass
+		elif _id in self.story.keys():
+			self.query(Button).remove()
+			bit = self.story[_id]
+			if "clear" in bit.commands:
+				self.query(Static).remove()
+			self.mount(Static(bit.text))
+			for b in bit.buttons:
+				self.mount(Button(b.label, id=b.target))
+
 
 FISH_TEXT = """Имеется спорная точка зрения, гласящая примерно следующее: базовые сценарии поведения пользователей преданы социально-демократической анафеме. Учитывая ключевые сценарии поведения, начало повседневной работы по формированию позиции прекрасно подходит для реализации системы массового участия. Наше дело не так однозначно, как может показаться: высокое качество позиционных исследований является качественно новой ступенью соответствующих условий активизации. Вот вам яркий пример современных тенденций — новая модель организационной деятельности напрямую зависит от распределения внутренних резервов и ресурсов. И нет сомнений, что тщательные исследования конкурентов лишь добавляют фракционных разногласий и описаны максимально подробно. В рамках спецификации современных стандартов, некоторые особенности внутренней политики смешаны с не уникальными данными до степени совершенной неузнаваемости, из-за чего возрастает их статус бесполезности. Кстати,  независимые государства, превозмогая сложившуюся непростую экономическую ситуацию, ограничены исключительно образом мышления. Картельные сговоры не допускают ситуации, при которой предприниматели в сети интернет набирают популярность среди определенных слоев населения, а значит, должны быть своевременно верифицированы. В целом, конечно, сплочённость команды профессионалов является качественно новой ступенью распределения внутренних резервов и ресурсов. В целом, конечно, начало повседневной работы по формированию позиции предопределяет высокую востребованность дальнейших направлений развития. Приятно, граждане, наблюдать, как базовые сценарии поведения пользователей, вне зависимости от их уровня, должны быть призваны к ответу. Идейные соображения высшего порядка, а также экономическая повестка сегодняшнего дня напрямую зависит от анализа существующих паттернов поведения. Картельные сговоры не допускают ситуации, при которой действия представителей оппозиции, вне зависимости от их уровня, должны быть превращены в посмешище, хотя само их существование приносит несомненную пользу обществу. Таким образом, высокотехнологичная концепция общественного уклада создаёт необходимость включения в производственный план целого ряда внеочередных мероприятий с учётом комплекса направлений прогрессивного развития. В частности, разбавленное изрядной долей эмпатии, рациональное мышление говорит о возможностях модели развития. Высокий уровень вовлечения представителей целевой аудитории является четким доказательством простого факта: начало повседневной работы по формированию позиции предполагает независимые способы реализации поэтапного и последовательного развития общества. Равным образом, выбранный нами инновационный путь предоставляет широкие возможности для кластеризации усилий. Разнообразный и богатый опыт говорит нам, что семантический разбор внешних противодействий предоставляет широкие возможности для поставленных обществом."""
 

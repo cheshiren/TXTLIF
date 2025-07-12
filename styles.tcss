@@ -16,7 +16,7 @@ VerticalScroll {
 	Intro {
 		margin: 0 2;
 		max-width: $text-width;
-		Static {
+		Static, Markdown {
 			margin: 1 0;
 		}
 	}
