@@ -1,3 +1,5 @@
+from typing import Any, Callable
+
 from textual.app import ComposeResult
 from textual.containers import VerticalScroll
 from textual.screen import Screen
@@ -37,5 +39,3 @@ class StoryBit():
 		self.buttons: list[StoryButton] = buttons
 	def __str__(self):
 		return (f"{self.label}\n{self.text}\n{self.commands}\n{self.buttons}\n")
-
-
