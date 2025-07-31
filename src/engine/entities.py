@@ -1,7 +1,12 @@
 from typing import Any, Callable, Optional
 
 from engine.enums import Proximity, Sex
-from engine.verbs import Look, Verb
+from engine.verbs import Verb
+
+class GameContext():
+	player: Any
+	currentloc: Any
+	oa: Any
 
 class GameLocation():
 	def __init__(
@@ -30,10 +35,6 @@ class GameLocation():
 	def NoGo(self) -> str:
 		return "No, there is nothing to do."
 
-class Loc(GameLocation):
-	def __init__(self, *args, **kwds):
-		super().__init__(*args, **kwds)
-
 class GameObject():
 	def __init__(
 			self,
@@ -46,7 +47,7 @@ class GameObject():
 			NameI: Optional[str] = None,
 			NameP: Optional[str] = None,
 			Children: list[Any] = [],
-			Parent: Any = None,
+			Parent: Optional[str] = None,
 			Disabled: bool = False,
 			Examined: int = 0,
 			Acted: int = 0,
@@ -54,7 +55,7 @@ class GameObject():
 			# Flags
 			isHidden: bool = False,
 			isOpen: bool = True,
-			isNear = Proximity.CLOSE,
+			# isNear = Proximity.CLOSE,
 			isOn: bool = False,
 			isTakeable: bool = False,
 			isDroppable: bool = False,
@@ -80,7 +81,7 @@ class GameObject():
 		self.Listened = Listened
 		self.isHidden = isHidden
 		self.isOpen = isOpen
-		self.isNear = isNear
+		# self.isNear = isNear
 		self.isOn = isOn
 		self.isTakeable = isTakeable
 		self.isDroppable = isDroppable
@@ -92,7 +93,20 @@ class GameObject():
 	def Desc(self):
 		return "ProtoObject description."
 
+class Loc(GameLocation):
+	def __init__(self, *args, **kwds):
+		super().__init__(*args, **kwds)
+
 class Obj(GameObject):
 	def __init__(self, *args, **kwds):
 		super().__init__(*args, **kwds)
+		self.Look: Verb = Verb()
+		self.Take: Verb = Verb()
+		self.Drop: Verb = Verb()
+	def init_verbs(self, ctx):
+		from engine.verbs import Look, Take, Drop
 		self.Look = Look(obj=self)
+		self.Take = Take(obj=self, ctx=ctx)
+		self.Drop = Drop(obj=self, ctx=ctx)
+
+

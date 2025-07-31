@@ -13,10 +13,6 @@ class Store(Loc):
 		return """Act1
 		Act2
 		Act3"""
-
-locsArray: list[Loc] = [Store()]
-print (locsArray[0].Desc())
-
 class Thing(Obj):
 	def __init__(self):
 		super().__init__(
@@ -28,9 +24,14 @@ class Thing(Obj):
 	def lookAddAct(self):
 		self.Examined += 11
 
+class player(Obj):
+	def __init__(self):
+		super().__init__(ID="player", Parent="Store")
+
 class frame(Obj):
 	def __init__(self):
-		super().__init__(ID="frame", Parent=Store)
+		super().__init__(ID="frame", Parent="Store")
+
 class frameCover(Obj):
 	def __init__(self):
 		super().__init__(
@@ -42,7 +43,7 @@ class frameCover(Obj):
 			NameI = "арахно-плёнкой корпуса",
 			NameP = "арахно-плёнке корпуса",
 			Sex = Sex.FEMALE,
-			Parent = frame
+			Parent = "frame"
 		)
 		self.Cut = Verb(self)
 		self.Cut.Outcome = self.CutOutcome
@@ -60,10 +61,10 @@ class frameCover(Obj):
 	def CutAfterAct(self):
 		self.isCut = True
 
-x = Thing()
-xx = frameCover()
+# x = Thing()
+# xx = frameCover()
 
-print(x.Look())
-print(x.Examined)
-print(xx.Cut())
-print(xx.Cut())
+# print(x.Look())
+# print(x.Examined)
+# print(xx.Cut())
+# print(xx.Cut())
